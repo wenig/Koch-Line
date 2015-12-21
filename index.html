@@ -1,0 +1,54 @@
+<html>
+<body>
+	<canvas id="myCanvas" width="800" height="800"></canvas>
+	<script>
+		var c=document.getElementById("myCanvas");
+		var ctx=c.getContext("2d");
+		max = 7;
+		koch(0, 0, 800, 800, 0, 400, 401);
+		
+		function koch(start_x, start_y, end_x, end_y, stop, far_away_x, far_away_y){
+			if(stop < max){
+				slope = getSlope(start_x, start_y, end_x, end_y);
+				var gap_x_diff = (end_x-start_x)/3;
+				var gap_y_diff = (end_y-start_y)/3;
+				var gap_length = Math.sqrt(Math.pow(gap_x_diff, 2) + Math.pow(gap_y_diff, 2));
+				var gap_start_x = start_x + gap_x_diff;
+				var gap_end_x = end_x - gap_x_diff;
+				var gap_start_y = start_y + gap_y_diff;
+				var gap_end_y = end_y - gap_y_diff;
+				draw_line(start_x, start_y, gap_start_x, gap_start_y);
+				draw_line(end_x, end_y, gap_end_x, gap_end_y);
+				var middle_slope = -Math.pow(slope, -1);
+				var middle_point_x = gap_start_x + (gap_x_diff/2);
+				var middle_point_y = gap_start_y + (gap_y_diff/2);
+				var middle_length = Math.sqrt(Math.pow(gap_length, 2) - Math.pow(gap_length/2, 2));
+				var peek_x = Math.sqrt(Math.pow(middle_length, 2)/(Math.pow(middle_slope, 2)+1));
+				var peek_y = middle_slope * peek_x;
+				if(path_length(peek_x + middle_point_x, peek_y + middle_point_y, far_away_x, far_away_y) > path_length(-peek_x + middle_point_x, -peek_y + middle_point_y, far_away_x, far_away_y)){
+					koch(gap_start_x, gap_start_y, peek_x + middle_point_x, peek_y + middle_point_y, stop + 1, middle_point_x, middle_point_y);
+					koch(gap_end_x, gap_end_y, peek_x + middle_point_x, peek_y + middle_point_y, stop + 1, middle_point_x, middle_point_y);
+				}else{
+					koch(gap_start_x, gap_start_y, -peek_x + middle_point_x, -peek_y + middle_point_y, stop + 1, middle_point_x, middle_point_y);
+					koch(gap_end_x, gap_end_y, -peek_x + middle_point_x, -peek_y + middle_point_y, stop + 1, middle_point_x, middle_point_y);
+				}
+				
+			}
+		}
+		
+		function getSlope(start_x, start_y, end_x, end_y){
+			return (end_y - start_y)/(end_x - start_x);
+		}
+		
+		function path_length(start_x, start_y, end_x, end_y){
+			return Math.sqrt(Math.pow(end_x - start_x, 2) + Math.pow(end_y - start_y, 2));
+		}
+		
+		function draw_line(start_x, start_y, end_x, end_y){
+			ctx.moveTo(start_x, start_y);
+			ctx.lineTo(end_x, end_y);
+			ctx.stroke();
+		}
+	</script>
+</body>
+</html>
